@@ -7,7 +7,7 @@ interface AuthContextType {
   userId: UserId | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<LoginResponse>;
+  login: (username: string, password: string) => Promise<LoginResponse>;
   logout: () => void;
 }
 
@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check for existing session in localStorage
     const storedToken = localStorage.getItem('auth_token');
     const storedUserId = localStorage.getItem('user_id') as UserId | null;
-    
+
     if (storedToken && storedUserId) {
       setToken(storedToken);
       setUserId(storedUserId);
@@ -30,27 +30,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<LoginResponse> => {
+  const login = async (username: string, password: string): Promise<LoginResponse> => {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
       });
-      
+
       const data: LoginResponse = await response.json();
-      
+
       if (data.success && data.userId && data.token) {
         setUserId(data.userId);
         setToken(data.token);
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('user_id', data.userId);
       }
-      
+
       return data;
     } catch (error) {
       console.error('Login error:', error);
-      return { success: false, error: 'Network error' };
+      return { success: false, error: 'Error de conexión' };
     }
   };
 

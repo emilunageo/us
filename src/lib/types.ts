@@ -3,7 +3,7 @@ export type UserId = 'a' | 'b';
 export interface User {
   id: UserId;
   name: string;
-  email: string;
+  username: string;
   password: string;
   photo: string;
   defaultMessage: string;

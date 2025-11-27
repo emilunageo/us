@@ -36,14 +36,14 @@ export default function Countdown() {
   }, []);
 
   if (!mounted) {
-    return <div className="text-center py-8">Loading...</div>;
+    return <div className="text-center py-8">Cargando...</div>;
   }
 
   if (timeLeft.isComplete) {
     return (
       <div className="text-center py-8">
-        <div className="text-4xl md:text-6xl font-bold text-pink-500 animate-pulse">
-          🎉 The day is here! 🎉
+        <div className="text-4xl md:text-6xl font-bold text-[#808000] animate-pulse">
+          🎉 ¡El día llegó! 🎉
         </div>
         <p className="text-xl text-gray-600 mt-4">Juntos</p>
       </div>
@@ -51,7 +51,7 @@ export default function Countdown() {
   }
 
   const timeUnits = [
-    { value: timeLeft.days, label: 'Dias' },
+    { value: timeLeft.days, label: 'Días' },
     { value: timeLeft.hours, label: 'Horas' },
     { value: timeLeft.minutes, label: 'Minutos' },
     { value: timeLeft.seconds, label: 'Segundos' }
@@ -59,14 +59,14 @@ export default function Countdown() {
 
   return (
     <div className="text-center py-6">
-      <p className="text-sm text-gray-500 mb-4">Cada vez mas cerca...</p>
+      <p className="text-sm text-gray-500 mb-4">Cada vez más cerca...</p>
       <div className="flex justify-center gap-3 md:gap-6">
         {timeUnits.map((unit) => (
           <div
             key={unit.label}
-            className="bg-white/70 backdrop-blur rounded-2xl p-3 md:p-5 shadow-lg min-w-[70px] md:min-w-[90px]"
+            className="p-3 md:p-5 min-w-[70px] md:min-w-[90px]"
           >
-            <div className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+            <div className="text-2xl md:text-4xl font-bold text-[#808000]">
               {String(unit.value).padStart(2, '0')}
             </div>
             <div className="text-xs md:text-sm text-gray-500 mt-1">{unit.label}</div>

@@ -5,20 +5,20 @@ import { LoginResponse, UserId } from '@/lib/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password } = body;
+    const { username, password } = body;
 
-    if (!email || !password) {
+    if (!username || !password) {
       return NextResponse.json<LoginResponse>({
         success: false,
-        error: 'Email and password are required'
+        error: 'Usuario y contraseña son requeridos'
       }, { status: 400 });
     }
 
     // Check against hardcoded users
     let matchedUser: UserId | null = null;
-    
+
     for (const [userId, user] of Object.entries(USERS)) {
-      if (user.email === email && user.password === password) {
+      if (user.username === username && user.password === password) {
         matchedUser = userId as UserId;
         break;
       }
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     if (!matchedUser) {
       return NextResponse.json<LoginResponse>({
         success: false,
-        error: 'Invalid email or password'
+        error: 'Usuario o contraseña incorrectos'
       }, { status: 401 });
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     console.error('Login error:', error);
     return NextResponse.json<LoginResponse>({
       success: false,
-      error: 'An error occurred during login'
+      error: 'Ocurrió un error durante el inicio de sesión'
     }, { status: 500 });
   }
 }

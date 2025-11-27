@@ -9,13 +9,13 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Us - Countdown to Our Moment",
-  description: "Counting down to when we meet",
+  title: "Noi - Cuenta Regresiva",
+  description: "Contando los días para estar juntos",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Us"
+    title: "Noi"
   }
 };
 
@@ -23,7 +23,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#ec4899"
+  themeColor: "#808000"
 };
 
 export default function RootLayout({
@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className={`${geistSans.variable} font-sans antialiased`}>
         <AuthProvider>
           {children}

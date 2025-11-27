@@ -11,27 +11,27 @@ import MessageModal from './MessageModal';
 
 export default function Dashboard() {
   const { token, logout } = useAuth();
-  const { error: geoError, loading: geoLoading } = useGeolocation(token);
+  const { error: geoError, loading: geoLoading, refreshing, refreshLocation } = useGeolocation(token);
   const { status, loading: statusLoading, updateMessage } = useStatus(token);
   const [showMessageModal, setShowMessageModal] = useState(false);
 
   if (statusLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#808000] border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 mt-4">Cargando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 p-4 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-white p-4 pb-20">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          
+        <h1 className="text-2xl font-bold text-[#808000]">
+
         </h1>
         <button
           onClick={logout}
@@ -44,17 +44,29 @@ export default function Dashboard() {
       {/* Countdown */}
       <Countdown />
 
-      {/* Location permission warning */}
-      {geoError && (
-        <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl text-sm text-center mb-4">
-          📍 {geoError}
-        </div>
-      )}
-      {geoLoading && (
-        <div className="text-center text-gray-500 text-sm mb-4">
-          📍 Getting your location...
-        </div>
-      )}
+      {/* Location section */}
+      <div className="flex flex-col items-center gap-2 mb-4">
+        {geoError && (
+          <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl text-sm text-center">
+            📍 {geoError}
+          </div>
+        )}
+        {geoLoading && (
+          <div className="text-center text-gray-500 text-sm">
+            📍 Obteniendo tu ubicación...
+          </div>
+        )}
+
+        {/* Manual refresh button */}
+        <button
+          onClick={refreshLocation}
+          disabled={refreshing || geoLoading}
+          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 hover:border-[#808000] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
+        >
+          {/* <span className={refreshing ? 'animate-spin' : ''}>🔄</span> */}
+          <span>{refreshing ? 'Actualizando...' : 'Actualizar ubicación'}</span>
+        </button>
+      </div>
 
       {/* Distance */}
       {status && <DistanceDisplay distance={status.distance} />}

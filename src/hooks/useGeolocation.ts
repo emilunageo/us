@@ -1,29 +1,63 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { LOCATION_UPDATE_INTERVAL } from '@/lib/config';
+import { useAuth } from '@/context/AuthContext';
 
 interface GeolocationState {
   lat: number | null;
   lon: number | null;
   error: string | null;
   loading: boolean;
+  refreshing: boolean;
+}
+
+const LOCATION_STORAGE_KEY = 'user_last_location';
+
+interface StoredLocation {
+  lat: number;
+  lon: number;
+  timestamp: number;
+  userId: string;
 }
 
 export function useGeolocation(token: string | null) {
+  const { userId } = useAuth();
   const [state, setState] = useState<GeolocationState>({
     lat: null,
     lon: null,
     error: null,
-    loading: true
+    loading: true,
+    refreshing: false
   });
-  const lastSentRef = useRef<number>(0);
+  const hasFetchedInitial = useRef(false);
 
-  const sendLocation = useCallback(async (lat: number, lon: number) => {
-    if (!token) return;
-    
+  // Load last location from localStorage on mount
+  useEffect(() => {
+    if (!userId) return;
+
+    const stored = localStorage.getItem(`${LOCATION_STORAGE_KEY}_${userId}`);
+    if (stored) {
+      try {
+        const parsed: StoredLocation = JSON.parse(stored);
+        if (parsed.userId === userId) {
+          setState(prev => ({
+            ...prev,
+            lat: parsed.lat,
+            lon: parsed.lon,
+            loading: false
+          }));
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+  }, [userId]);
+
+  const sendLocation = useCallback(async (lat: number, lon: number): Promise<boolean> => {
+    if (!token || !userId) return false;
+
     try {
-      await fetch('/api/location', {
+      const response = await fetch('/api/location', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,47 +65,62 @@ export function useGeolocation(token: string | null) {
         },
         body: JSON.stringify({ lat, lon })
       });
-      lastSentRef.current = Date.now();
-    } catch (error) {
-      console.error('Failed to send location:', error);
-    }
-  }, [token]);
 
-  const getPosition = useCallback(() => {
+      if (response.ok) {
+        // Save to localStorage
+        const locationData: StoredLocation = {
+          lat,
+          lon,
+          timestamp: Date.now(),
+          userId
+        };
+        localStorage.setItem(`${LOCATION_STORAGE_KEY}_${userId}`, JSON.stringify(locationData));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error al enviar ubicación:', error);
+      return false;
+    }
+  }, [token, userId]);
+
+  const getPosition = useCallback((isManualRefresh = false) => {
     if (!navigator.geolocation) {
       setState(prev => ({
         ...prev,
-        error: 'Geolocation is not supported by your browser',
-        loading: false
+        error: 'Tu navegador no soporta geolocalización',
+        loading: false,
+        refreshing: false
       }));
       return;
+    }
+
+    if (isManualRefresh) {
+      setState(prev => ({ ...prev, refreshing: true, error: null }));
     }
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude: lat, longitude: lon } = position.coords;
-        setState({ lat, lon, error: null, loading: false });
-        
-        // Only send if enough time has passed since last send
-        const timeSinceLastSend = Date.now() - lastSentRef.current;
-        if (timeSinceLastSend >= LOCATION_UPDATE_INTERVAL || lastSentRef.current === 0) {
-          await sendLocation(lat, lon);
-        }
+        setState(prev => ({ ...prev, lat, lon, error: null, loading: false }));
+
+        await sendLocation(lat, lon);
+        setState(prev => ({ ...prev, refreshing: false }));
       },
       (error) => {
-        let errorMessage = 'Unable to get location';
+        let errorMessage = 'No se pudo obtener la ubicación';
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = 'Location permission denied';
+            errorMessage = 'Permiso de ubicación denegado';
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location unavailable';
+            errorMessage = 'Ubicación no disponible';
             break;
           case error.TIMEOUT:
-            errorMessage = 'Location request timed out';
+            errorMessage = 'Tiempo de espera agotado';
             break;
         }
-        setState(prev => ({ ...prev, error: errorMessage, loading: false }));
+        setState(prev => ({ ...prev, error: errorMessage, loading: false, refreshing: false }));
       },
       {
         enableHighAccuracy: false,
@@ -81,18 +130,21 @@ export function useGeolocation(token: string | null) {
     );
   }, [sendLocation]);
 
+  // Request location only once on initial mount
   useEffect(() => {
-    if (!token) return;
+    if (!token || hasFetchedInitial.current) return;
 
-    // Get initial position
-    getPosition();
-
-    // Set up interval for periodic updates
-    const interval = setInterval(getPosition, LOCATION_UPDATE_INTERVAL);
-
-    return () => clearInterval(interval);
+    hasFetchedInitial.current = true;
+    getPosition(false);
   }, [token, getPosition]);
 
-  return state;
+  const refreshLocation = useCallback(() => {
+    getPosition(true);
+  }, [getPosition]);
+
+  return {
+    ...state,
+    refreshLocation
+  };
 }
 

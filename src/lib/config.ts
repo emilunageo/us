@@ -3,7 +3,7 @@ export const USERS = {
   a: {
     id: 'a',
     name: '🐣 Pollo',
-    email: 'sara@example.com',
+    username: 'sara',
     password: 'love2025',
     photo: '/photos/sara.jpeg',
     defaultMessage: 'Amore!'
@@ -11,7 +11,7 @@ export const USERS = {
   b: {
     id: 'b',
     name: '🧸 Emi',
-    email: 'emi@example.com',
+    username: 'emi',
     password: 'love2025',
     photo: '/photos/emi.jpeg',
     defaultMessage: 'Amore!'
@@ -23,7 +23,6 @@ export const USERS = {
 export const TARGET_DATE = new Date('2026-01-11T00:00:00');
 
 // Polling intervals (in milliseconds)
-export const LOCATION_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
 export const STATUS_POLL_INTERVAL = 15 * 1000; // 15 seconds
 
 // Session token (simple hardcoded for MVP)

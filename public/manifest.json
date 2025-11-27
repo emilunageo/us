@@ -1,11 +1,11 @@
 {
-  "name": "Us - Countdown",
-  "short_name": "Us",
-  "description": "Counting down to our moment together",
+  "name": "Noi - Cuenta Regresiva",
+  "short_name": "Noi",
+  "description": "Contando los días para estar juntos",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fdf2f8",
-  "theme_color": "#ec4899",
+  "background_color": "#f5f5f5",
+  "theme_color": "#808000",
   "icons": [
     {
       "src": "/icon-192.png",
