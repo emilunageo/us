@@ -17,10 +17,7 @@ export default function DistanceDisplay({ distance }: DistanceDisplayProps) {
     if (km < 1) {
       return '¡Estamos juntos!';
     }
-    if (km >= 1000) {
-      return `${(km / 1000).toFixed(1)}k km`;
-    }
-    return `${km} km`;
+    return `${Math.round(km).toLocaleString('es-ES')} km`;
   };
 
   return (
