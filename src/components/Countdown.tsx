@@ -59,7 +59,6 @@ export default function Countdown() {
 
   return (
     <div className="text-center py-6">
-      <p className="text-sm text-gray-500 mb-4">Cada vez más cerca...</p>
       <div className="flex justify-center gap-3 md:gap-6">
         {timeUnits.map((unit) => (
           <div

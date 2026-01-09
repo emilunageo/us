@@ -2,6 +2,8 @@
 
 import Image from 'next/image';
 import { UserStatus } from '@/lib/types';
+import { useAuth } from '@/context/AuthContext';
+import { useGeolocation } from '@/hooks/useGeolocation';
 
 interface UserCardProps {
   userStatus: UserStatus;
@@ -11,6 +13,8 @@ interface UserCardProps {
 }
 
 export default function UserCard({ userStatus, showCity, isCurrentUser, onMessageEdit }: UserCardProps) {
+  const { token, logout } = useAuth();
+  const { error: geoError, loading: geoLoading, refreshing, refreshLocation } = useGeolocation(token);
   const { user, location, message } = userStatus;
 
   const locationDisplay = location
@@ -22,9 +26,9 @@ export default function UserCard({ userStatus, showCity, isCurrentUser, onMessag
   return (
     <div className="p-6 flex flex-col items-center relative">
       {/* Message bubble */}
-      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#808000] text-white text-sm px-4 py-2 rounded-full shadow-md max-w-[200px] truncate">
+      {/* <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-[#808000] text-white text-sm px-4 py-2 rounded-full shadow-md max-w-[200px] truncate">
         {message?.text || '...'}
-      </div>
+      </div> */}
 
       {/* Profile photo */}
       <div className="relative mt-4 mb-4">
@@ -49,20 +53,22 @@ export default function UserCard({ userStatus, showCity, isCurrentUser, onMessag
       <h3 className="text-xl font-bold text-gray-800">{user.name}</h3>
 
       {/* Location */}
-      <div className="flex items-center gap-1 text-gray-500 text-sm mt-1">
-        <span>📍</span>
-        <span>{locationDisplay}</span>
+      <div className="flex flex-col items-center gap-1 text-gray-500 text-sm mt-1">
+        <div>
+          <span>📍</span>
+          <span>{locationDisplay}</span>
+        </div>
+        <div>
+          {/* Manual refresh button */}
+          <button
+            onClick={isCurrentUser ? refreshLocation : undefined}
+            disabled={!isCurrentUser || refreshing || geoLoading}
+            className="flex items-center gap-2 px-4 py-2 disabled:hidden cursor-pointer"
+          >
+            <span>{refreshing ? 'Actualizando...' : 'Actualizar mi ubicación'}</span>
+          </button>
+        </div>
       </div>
-
-      {/* Edit message button for current user */}
-      {isCurrentUser && onMessageEdit && (
-        <button
-          onClick={onMessageEdit}
-          className="mt-4 text-sm text-[#808000] hover:text-[#666600] transition-colors flex items-center gap-1 cursor-pointer"
-        >
-          <span>Editar Mensaje</span>
-        </button>
-      )}
     </div>
   );
 }

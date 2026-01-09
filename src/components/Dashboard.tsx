@@ -44,33 +44,6 @@ export default function Dashboard() {
       {/* Countdown */}
       <Countdown />
 
-      {/* Location section */}
-      <div className="flex flex-col items-center gap-2 mb-4">
-        {geoError && (
-          <div className="bg-yellow-50 text-yellow-700 p-3 rounded-xl text-sm text-center">
-            📍 {geoError}
-          </div>
-        )}
-        {geoLoading && (
-          <div className="text-center text-gray-500 text-sm">
-            📍 Obteniendo tu ubicación...
-          </div>
-        )}
-
-        {/* Manual refresh button */}
-        <button
-          onClick={refreshLocation}
-          disabled={refreshing || geoLoading}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 hover:bg-gray-50 hover:border-[#808000] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm"
-        >
-          {/* <span className={refreshing ? 'animate-spin' : ''}>🔄</span> */}
-          <span>{refreshing ? 'Actualizando...' : 'Actualizar ubicación'}</span>
-        </button>
-      </div>
-
-      {/* Distance */}
-      {status && <DistanceDisplay distance={status.distance} />}
-
       {/* User profiles */}
       {status && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 max-w-2xl mx-auto">
