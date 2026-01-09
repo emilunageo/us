@@ -11,7 +11,7 @@ import MessageModal from './MessageModal';
 
 export default function Dashboard() {
   const { token, logout } = useAuth();
-  const { error: geoError, loading: geoLoading, refreshing, refreshLocation } = useGeolocation(token);
+  useGeolocation(token); // Initialize geolocation tracking
   const { status, loading: statusLoading, updateMessage } = useStatus(token);
   const [showMessageModal, setShowMessageModal] = useState(false);
 
@@ -43,6 +43,9 @@ export default function Dashboard() {
 
       {/* Countdown */}
       <Countdown />
+
+      {/* Distance Display */}
+      <DistanceDisplay distance={status?.distance ?? null} />
 
       {/* User profiles */}
       {status && (

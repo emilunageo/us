@@ -9,13 +9,13 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Noi - Cuenta Regresiva",
-  description: "Contando los días para estar juntos",
+  title: "Noi - Sara & Emi",
+  description: "Un espacio creado por nosotros, para nosotros",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Noi"
+    title: "sara & emi",
   }
 };
 

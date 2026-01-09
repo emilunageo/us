@@ -20,7 +20,7 @@ export const USERS = {
 
 // Target date for countdown (YYYY-MM-DD format)
 // Change this to your actual meeting date
-export const TARGET_DATE = new Date('2026-01-11T00:00:00');
+export const TARGET_DATE = new Date('2026-01-10T23:00:00+01:00');
 
 // Polling intervals (in milliseconds)
 export const STATUS_POLL_INTERVAL = 15 * 1000; // 15 seconds
